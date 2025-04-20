@@ -1,8 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import "dotenv/config";
 import cors from "cors";
-const app: Application = express();
-const PORT = process.env.PORT || 7000;
 import Routes from "./routes/index.js";
 import { Server } from "socket.io";
 import { createServer } from "http";
@@ -13,6 +11,27 @@ import { instrument } from "@socket.io/admin-ui";
 import { connectKafkaProducer } from "./config/kafka.config.js";
 import { consumeMessages } from "./helper.js";
 
+const app: Application = express();
+
+// * Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.get("/", (req: Request, res: Response) => {
+  return res.send("It's working Guys 🙌");
+});
+
+// * Routes
+app.use("/api", Routes);
+
+// * Add Kafka Producer
+connectKafkaProducer().catch((err) => console.log("Kafka Consumer error", err));
+consumeMessages(process.env.KAFKA_TOPIC!).catch((err) =>
+  console.log("The Kafka Consume error", err)
+);
+
+// * Create HTTP server and Socket.IO
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -26,26 +45,12 @@ instrument(io, {
   mode: "development",
 });
 
-export { io };
 setupSocket(io);
 
-// * Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+export { app, server, io };
 
-app.get("/", (req: Request, res: Response) => {
-  return res.send("It's working Guys 🙌");
-});
-
-// * Add Kafka Producer
-connectKafkaProducer().catch((err) => console.log("Kafka Consumer error", err));
-
-consumeMessages(process.env.KAFKA_TOPIC!).catch((err) =>
-  console.log("The Kafka Consume error", err)
-);
-
-// * Routes
-app.use("/api", Routes);
-
-server.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
+// Only listen if NOT running on Vercel
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 7000;
+  server.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
+}
