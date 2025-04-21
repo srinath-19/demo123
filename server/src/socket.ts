@@ -16,11 +16,14 @@ export function setupSocket(io: Server) {
 
   io.on("connection", (socket: CustomSocket) => {
     // * Join the room
+    console.log('before joing the room telugu')
     socket.join(socket.room);
+    console.log("After joining the room hindi")
 
     socket.on("message", async (data) => {
       try {
         await produceMessage("chats", data);
+        console.log("tamil some random chats data")
       } catch (error) {
         console.log("The kafka produce error is", error);
       }
