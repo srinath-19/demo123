@@ -47,7 +47,7 @@ instrument(io, {
 
 setupSocket(io);
 
-export { app, server, io };
+export default app;
 
 // Only listen if NOT running on Vercel
 if (process.env.NODE_ENV !== "production") {
