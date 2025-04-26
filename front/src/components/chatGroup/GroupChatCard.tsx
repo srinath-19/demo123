@@ -13,7 +13,6 @@ export default function GroupChatCard({
   user: CustomUser;
 }) {
   return (
-    <Link href= {`${Env.APP_URL}/chat/${group.id}`}>
     <Card>
       <CardHeader className="flex-row justify-between items-center ">
         <CardTitle className="text-2xl">{group.title}</CardTitle>
@@ -25,6 +24,6 @@ export default function GroupChatCard({
         </p>
         <p>Created At :-{new Date(group.created_at).toDateString()}</p>
       </CardContent>
-    </Card></Link>
+    </Card>
   );
 }

@@ -66,6 +66,14 @@ export default function Chats({
                   : "bg-gradient-to-r from-gray-200 to-gray-300 text-black self-start"
               }`}
             >
+              <a style={{
+
+                color:'',
+                fontStyle:'italic',
+                fontSize: '17px',
+                fontWeight: 'bold'
+              }}>{message?.name}</a>
+              <br/>
               {message.message}
             </div>
           ))}
